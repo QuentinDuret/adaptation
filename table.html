@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta content="user-scalable=0" name='viewport'>
+        <title>Home</title>
+        <link rel="stylesheet" type="text/css" href="home.css">
+    </head>
+    <body>
+        <h1  class="center"><b>Pokécylopédie</b></h1>
+        <h3 id='title' class="center">Génération</h3> 
+        <br>
+    
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+            });
+
+            document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " " + window.location.hash.substring(1);
+            
+            class Request {
+
+                static getPokemon (generation){
+                    const req = new XMLHttpRequest();
+                    req.open('GET', 'https://pokeapi.co/api/v2/pokedex/' + generation +'/', false); 
+                    req.send(null);
+
+                    if (req.status === 200) {
+                        const obj = JSON.parse(req.responseText);
+                        return obj.pokemon_entries;
+                    } else {
+                        console.log("Status de la réponse: %d (%s)", req.status, req.statusText);
+                    }
+                }
+
+                static getInfo(url) {
+                    const req = new XMLHttpRequest();
+                    req.open('GET', url.replace("-species",""), false); 
+                    req.send(null);
+
+                    if (req.status === 200) {
+                        const obj = JSON.parse(req.responseText);
+                        return obj;
+                    } else {
+                        console.log("Status de la réponse: %d (%s)", req.status, req.statusText);
+                    }
+                }
+
+                static createTable() {
+                    const generation = parseInt(window.location.hash.substring(1)) + 1
+                    const listPokemon =  this.getPokemon(generation);
+                    var body = document.getElementsByTagName('body')[0];
+                    var tbl = document.createElement('table');
+                    tbl.style.width = '100%';
+                    tbl.setAttribute('border', '1');
+                    var tbdy = document.createElement('tbody');
+
+                    for (var i = 0; i < listPokemon.length; i++) {
+                        var tr = document.createElement('tr');
+
+
+                        var tdNumber = document.createElement('td');
+                        tdNumber.appendChild(document.createTextNode(i));
+                        tdNumber.classList.add("center");
+                        tr.appendChild(tdNumber);
+                        
+                        const info = this.getInfo(listPokemon[i].pokemon_species.url)
+                        var tdImage = document.createElement('td');
+                        
+                        var x = document.createElement("IMG");
+                        x.setAttribute("src", info.sprites.front_default);
+                        tdImage.appendChild(x);
+                        tdImage.classList.add("center");
+                        tr.appendChild(tdImage);
+
+                        var td = document.createElement('td');
+                        td.appendChild(document.createTextNode(listPokemon[i].pokemon_species.name));
+                        td.classList.add("center");
+                        tr.appendChild(td);
+                       
+                        const type = info.types;
+                        var tdType = document.createElement('td');
+                        tdType.classList.add("center");
+                        
+                        for (var j = 0; j < 2; j++) {
+                            if ( type[j] !== undefined) {
+                                tdType.appendChild(document.createTextNode(type[j].type.name +" " +" "));
+                            }
+                        }
+                
+                        tr.appendChild(tdType);
+                        tbdy.appendChild(tr);
+                    }
+                    tbl.appendChild(tbdy);
+                    body.appendChild(tbl);
+                }
+                
+            }
+
+            Request.createTable();
+
+        </script>
+    </body>
+</html>

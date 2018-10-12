@@ -1,0 +1,17 @@
+.center {
+    text-align: center;
+}
+
+.type {
+    border-style: groove;
+}
+
+button{
+    height:20px; 
+    width:100px; 
+    margin: -20px -50px; 
+    margin-bottom: 10px;
+    position:relative;
+    top:50%; 
+    left:50%;
+}
